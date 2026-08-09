@@ -3,3 +3,4 @@ python-dotenv
 psutil
 SpeechRecognition
 PyAudio
+groq

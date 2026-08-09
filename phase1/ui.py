@@ -1,3 +1,4 @@
+
 import sys
 
 from PySide6.QtCore import Qt, QThread, Signal
@@ -12,34 +13,52 @@ from PySide6.QtWidgets import (
     QWidget
 )
 
+from ai_service import AIService
 from speech_to_text import SpeechToText
 
 
 class SpeechWorker(QThread):
 
     transcription_ready = Signal(str)
+    answer_ready = Signal(str)
     listening_status = Signal(str)
 
     def __init__(self):
+
         super().__init__()
 
         self.speech_to_text = SpeechToText()
-        self.running = True
+        self.ai_service = AIService()
 
     def run(self):
 
-        self.listening_status.emit("Status: Listening...")
+        self.listening_status.emit(
+            "Status: Listening..."
+        )
 
         text = self.speech_to_text.listen()
 
-        if text:
-            self.transcription_ready.emit(text)
+        if not text:
 
-        self.listening_status.emit("Status: Ready")
+            self.listening_status.emit(
+                "Status: No question detected"
+            )
 
-    def stop(self):
+            return
 
-        self.running = False
+        self.transcription_ready.emit(text)
+
+        self.listening_status.emit(
+            "Status: Generating AI answer..."
+        )
+
+        answer = self.ai_service.get_answer(text)
+
+        self.answer_ready.emit(answer)
+
+        self.listening_status.emit(
+            "Status: Ready"
+        )
 
 
 class MeetingAssistantWindow(QMainWindow):
@@ -75,9 +94,13 @@ class MeetingAssistantWindow(QMainWindow):
         central_widget.setLayout(main_layout)
 
         # Title
-        title = QLabel("AI MEETING ASSISTANT")
+        title = QLabel(
+            "AI MEETING ASSISTANT"
+        )
 
-        title.setAlignment(Qt.AlignCenter)
+        title.setAlignment(
+            Qt.AlignCenter
+        )
 
         title.setStyleSheet("""
             QLabel {
@@ -90,7 +113,9 @@ class MeetingAssistantWindow(QMainWindow):
         main_layout.addWidget(title)
 
         # Status
-        self.status_label = QLabel("Status: Ready")
+        self.status_label = QLabel(
+            "Status: Ready"
+        )
 
         self.status_label.setStyleSheet("""
             QLabel {
@@ -99,10 +124,14 @@ class MeetingAssistantWindow(QMainWindow):
             }
         """)
 
-        main_layout.addWidget(self.status_label)
+        main_layout.addWidget(
+            self.status_label
+        )
 
         # Question heading
-        question_heading = QLabel("Question")
+        question_heading = QLabel(
+            "Question"
+        )
 
         question_heading.setStyleSheet("""
             QLabel {
@@ -111,7 +140,9 @@ class MeetingAssistantWindow(QMainWindow):
             }
         """)
 
-        main_layout.addWidget(question_heading)
+        main_layout.addWidget(
+            question_heading
+        )
 
         # Question box
         self.question_box = QTextEdit()
@@ -120,14 +151,22 @@ class MeetingAssistantWindow(QMainWindow):
             "The spoken meeting question will appear here..."
         )
 
-        self.question_box.setReadOnly(True)
+        self.question_box.setReadOnly(
+            True
+        )
 
-        self.question_box.setMinimumHeight(100)
+        self.question_box.setMinimumHeight(
+            100
+        )
 
-        main_layout.addWidget(self.question_box)
+        main_layout.addWidget(
+            self.question_box
+        )
 
         # Answer heading
-        answer_heading = QLabel("AI Answer")
+        answer_heading = QLabel(
+            "AI Answer"
+        )
 
         answer_heading.setStyleSheet("""
             QLabel {
@@ -136,7 +175,9 @@ class MeetingAssistantWindow(QMainWindow):
             }
         """)
 
-        main_layout.addWidget(answer_heading)
+        main_layout.addWidget(
+            answer_heading
+        )
 
         # Answer box
         self.answer_box = QTextEdit()
@@ -145,11 +186,17 @@ class MeetingAssistantWindow(QMainWindow):
             "The AI-generated answer will appear here..."
         )
 
-        self.answer_box.setReadOnly(True)
+        self.answer_box.setReadOnly(
+            True
+        )
 
-        self.answer_box.setMinimumHeight(150)
+        self.answer_box.setMinimumHeight(
+            150
+        )
 
-        main_layout.addWidget(self.answer_box)
+        main_layout.addWidget(
+            self.answer_box
+        )
 
         # Buttons
         button_layout = QHBoxLayout()
@@ -247,6 +294,10 @@ class MeetingAssistantWindow(QMainWindow):
             self.update_question
         )
 
+        self.speech_worker.answer_ready.connect(
+            self.update_answer
+        )
+
         self.speech_worker.listening_status.connect(
             self.update_status
         )
@@ -269,11 +320,21 @@ class MeetingAssistantWindow(QMainWindow):
 
     def update_question(self, text):
 
-        self.question_box.setPlainText(text)
+        self.question_box.setPlainText(
+            text
+        )
+
+    def update_answer(self, answer):
+
+        self.answer_box.setPlainText(
+            answer
+        )
 
     def update_status(self, status):
 
-        self.status_label.setText(status)
+        self.status_label.setText(
+            status
+        )
 
     def clear_content(self):
 
@@ -294,9 +355,12 @@ def run_app():
 
     window.show()
 
-    sys.exit(app.exec())
+    sys.exit(
+        app.exec()
+    )
 
 
 if __name__ == "__main__":
 
     run_app()
+

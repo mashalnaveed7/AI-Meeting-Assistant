@@ -1,37 +1,55 @@
 # Phase 1 - AI Meeting Assistant
 
-## Day 2 Progress
+## Day 3 Progress
 
-The speech-to-text component was implemented.
+The Large Language Model integration has been completed.
 
 ## Current Workflow
 
 Microphone
-→ Speech Recognition
-→ Text
-→ PySide6 Question Box
+→ Speech-to-Text
+→ Question
+→ Groq LLM
+→ AI Answer
+→ PySide6 GUI
 
 ## Technologies Used
 
 - Python
+- PySide6
 - SpeechRecognition
 - PyAudio
-- PySide6
+- Groq API
+- Llama 3.1
+- python-dotenv
 
 ## Current Functionality
 
 The application can:
 
-1. Access the microphone.
-2. Listen to spoken input.
-3. Convert spoken input into text.
-4. Display the transcription in the desktop GUI.
+1. Listen to the user's microphone.
+2. Convert spoken questions into text.
+3. Display the question in the GUI.
+4. Send the question to an LLM.
+5. Generate an AI-based answer.
+6. Display the answer in the GUI.
+
+## Security
+
+The Groq API key is stored in a local `.env` file and is excluded from GitHub using `.gitignore`.
 
 ## Current Limitation
 
-The current prototype processes one spoken input at a time. Continuous meeting transcription and AI-based answer generation will be implemented in later stages.
+The current prototype processes one spoken question at a time.
+
+Continuous meeting conversation handling will be improved in later development.
 
 ## Status
 
-Speech-to-text component: Completed
-AI response generation: Pending
+Speech-to-text: Completed
+
+LLM integration: Completed
+
+AI answer display: Completed
+
+Continuous meeting processing: Planned
