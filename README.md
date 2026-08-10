@@ -48,10 +48,18 @@ The project consists of three phases:
 - AI answer generation completed
 - AI answers displayed in GUI
 
-### Upcoming
 
-### Day 4
-- Phase 2 privacy/screen-sharing functionality
+
+- ### Day 4
+
+- Implemented Phase 2 privacy mode.
+- Added Windows screen-capture exclusion using SetWindowDisplayAffinity.
+- Added Privacy Mode ON/OFF control.
+- Redesigned the desktop GUI.
+- Added interactive buttons and status indicators.
+- Improved question and answer layout.
+- Added professional dark theme.
+### Upcoming
 
 ### Day 5
 - Phase 3 AI assistant detection

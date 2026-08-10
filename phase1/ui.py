@@ -1,4 +1,3 @@
-
 import sys
 
 from PySide6.QtCore import Qt, QThread, Signal
@@ -10,11 +9,15 @@ from PySide6.QtWidgets import (
     QTextEdit,
     QVBoxLayout,
     QHBoxLayout,
-    QWidget
+    QWidget,
+    QFrame
 )
 
 from ai_service import AIService
 from speech_to_text import SpeechToText
+
+from phase2.privacy_mode import PrivacyMode
+from phase2.privacy_ui import PrivacyStatusWidget
 
 
 class SpeechWorker(QThread):
@@ -33,7 +36,7 @@ class SpeechWorker(QThread):
     def run(self):
 
         self.listening_status.emit(
-            "Status: Listening..."
+            "LISTENING"
         )
 
         text = self.speech_to_text.listen()
@@ -41,7 +44,7 @@ class SpeechWorker(QThread):
         if not text:
 
             self.listening_status.emit(
-                "Status: No question detected"
+                "NO QUESTION DETECTED"
             )
 
             return
@@ -49,7 +52,7 @@ class SpeechWorker(QThread):
         self.transcription_ready.emit(text)
 
         self.listening_status.emit(
-            "Status: Generating AI answer..."
+            "GENERATING ANSWER"
         )
 
         answer = self.ai_service.get_answer(text)
@@ -57,7 +60,7 @@ class SpeechWorker(QThread):
         self.answer_ready.emit(answer)
 
         self.listening_status.emit(
-            "Status: Ready"
+            "READY"
         )
 
 
@@ -67,10 +70,18 @@ class MeetingAssistantWindow(QMainWindow):
 
         super().__init__()
 
-        self.setWindowTitle("AI Meeting Assistant")
-        self.setMinimumSize(800, 600)
+        self.setWindowTitle(
+            "AI Meeting Assistant"
+        )
+
+        self.setMinimumSize(
+            950,
+            700
+        )
 
         self.speech_worker = None
+
+        self.privacy_mode = PrivacyMode(self)
 
         self.create_ui()
 
@@ -78,77 +89,157 @@ class MeetingAssistantWindow(QMainWindow):
 
         central_widget = QWidget()
 
-        self.setCentralWidget(central_widget)
+        self.setCentralWidget(
+            central_widget
+        )
+
+        central_widget.setStyleSheet("""
+            QWidget {
+                background-color: #10141C;
+                color: #E8ECF3;
+                font-family: "Segoe UI";
+            }
+        """)
 
         main_layout = QVBoxLayout()
 
         main_layout.setContentsMargins(
             30,
+            25,
             30,
-            30,
-            30
+            25
         )
 
-        main_layout.setSpacing(15)
+        main_layout.setSpacing(18)
 
-        central_widget.setLayout(main_layout)
+        central_widget.setLayout(
+            main_layout
+        )
 
-        # Title
+        # =========================================
+        # HEADER
+        # =========================================
+
+        header_layout = QHBoxLayout()
+
+        title_layout = QVBoxLayout()
+
         title = QLabel(
             "AI MEETING ASSISTANT"
         )
 
-        title.setAlignment(
-            Qt.AlignCenter
-        )
-
         title.setStyleSheet("""
             QLabel {
-                font-size: 28px;
-                font-weight: bold;
-                padding: 15px;
+                color: #F4F7FB;
+                font-size: 27px;
+                font-weight: 700;
             }
         """)
 
-        main_layout.addWidget(title)
+        subtitle = QLabel(
+            "Real-time AI assistance for online meetings"
+        )
 
-        # Status
+        subtitle.setStyleSheet("""
+            QLabel {
+                color: #8E99AA;
+                font-size: 13px;
+                margin-top: 2px;
+            }
+        """)
+
+        title_layout.addWidget(title)
+        title_layout.addWidget(subtitle)
+
+        header_layout.addLayout(
+            title_layout
+        )
+
+        header_layout.addStretch()
+
+        # Status indicator
         self.status_label = QLabel(
-            "Status: Ready"
+            "●  READY"
+        )
+
+        self.status_label.setAlignment(
+            Qt.AlignCenter
+        )
+
+        self.status_label.setMinimumWidth(
+            150
         )
 
         self.status_label.setStyleSheet("""
             QLabel {
-                font-size: 16px;
-                padding: 10px;
-            }
-        """)
-
-        main_layout.addWidget(
-            self.status_label
-        )
-
-        # Question heading
-        question_heading = QLabel(
-            "Question"
-        )
-
-        question_heading.setStyleSheet("""
-            QLabel {
-                font-size: 18px;
+                background-color: #202733;
+                color: #71D79A;
+                border: 1px solid #334052;
+                border-radius: 18px;
+                padding: 8px 16px;
+                font-size: 12px;
                 font-weight: bold;
             }
         """)
 
-        main_layout.addWidget(
-            question_heading
+        header_layout.addWidget(
+            self.status_label
         )
 
-        # Question box
+        main_layout.addLayout(
+            header_layout
+        )
+
+        # =========================================
+        # QUESTION CARD
+        # =========================================
+
+        question_card = QFrame()
+
+        question_card.setStyleSheet("""
+            QFrame {
+                background-color: #181E28;
+                border: 1px solid #293241;
+                border-radius: 14px;
+            }
+        """)
+
+        question_layout = QVBoxLayout()
+
+        question_layout.setContentsMargins(
+            20,
+            18,
+            20,
+            18
+        )
+
+        question_layout.setSpacing(10)
+
+        question_card.setLayout(
+            question_layout
+        )
+
+        question_title = QLabel(
+            "QUESTION"
+        )
+
+        question_title.setStyleSheet("""
+            QLabel {
+                color: #6EA8FE;
+                font-size: 13px;
+                font-weight: bold;
+                letter-spacing: 1px;
+            }
+        """)
+
+        question_layout.addWidget(
+            question_title
+        )
+
         self.question_box = QTextEdit()
 
         self.question_box.setPlaceholderText(
-            "The spoken meeting question will appear here..."
+            "Your spoken meeting question will appear here..."
         )
 
         self.question_box.setReadOnly(
@@ -159,27 +250,75 @@ class MeetingAssistantWindow(QMainWindow):
             100
         )
 
-        main_layout.addWidget(
-            self.question_box
-        )
+        self.question_box.setStyleSheet("""
+            QTextEdit {
+                background-color: #11161F;
+                color: #E8ECF3;
+                border: 1px solid #303949;
+                border-radius: 10px;
+                padding: 12px;
+                font-size: 14px;
+            }
 
-        # Answer heading
-        answer_heading = QLabel(
-            "AI Answer"
-        )
-
-        answer_heading.setStyleSheet("""
-            QLabel {
-                font-size: 18px;
-                font-weight: bold;
+            QTextEdit:focus {
+                border: 1px solid #6EA8FE;
             }
         """)
 
-        main_layout.addWidget(
-            answer_heading
+        question_layout.addWidget(
+            self.question_box
         )
 
-        # Answer box
+        main_layout.addWidget(
+            question_card
+        )
+
+        # =========================================
+        # ANSWER CARD
+        # =========================================
+
+        answer_card = QFrame()
+
+        answer_card.setStyleSheet("""
+            QFrame {
+                background-color: #181E28;
+                border: 1px solid #293241;
+                border-radius: 14px;
+            }
+        """)
+
+        answer_layout = QVBoxLayout()
+
+        answer_layout.setContentsMargins(
+            20,
+            18,
+            20,
+            18
+        )
+
+        answer_layout.setSpacing(10)
+
+        answer_card.setLayout(
+            answer_layout
+        )
+
+        answer_title = QLabel(
+            "AI ANSWER"
+        )
+
+        answer_title.setStyleSheet("""
+            QLabel {
+                color: #9B8AFB;
+                font-size: 13px;
+                font-weight: bold;
+                letter-spacing: 1px;
+            }
+        """)
+
+        answer_layout.addWidget(
+            answer_title
+        )
+
         self.answer_box = QTextEdit()
 
         self.answer_box.setPlaceholderText(
@@ -191,26 +330,56 @@ class MeetingAssistantWindow(QMainWindow):
         )
 
         self.answer_box.setMinimumHeight(
-            150
+            190
         )
 
-        main_layout.addWidget(
+        self.answer_box.setStyleSheet("""
+            QTextEdit {
+                background-color: #11161F;
+                color: #E8ECF3;
+                border: 1px solid #303949;
+                border-radius: 10px;
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            QTextEdit:focus {
+                border: 1px solid #9B8AFB;
+            }
+        """)
+
+        answer_layout.addWidget(
             self.answer_box
         )
 
-        # Buttons
+        main_layout.addWidget(
+            answer_card
+        )
+
+        # =========================================
+        # BUTTONS
+        # =========================================
+
         button_layout = QHBoxLayout()
 
+        button_layout.setSpacing(
+            12
+        )
+
         self.start_button = QPushButton(
-            "Start Listening"
+            "🎤  Start Listening"
         )
 
         self.stop_button = QPushButton(
-            "Stop Listening"
+            "■  Stop"
         )
 
         self.clear_button = QPushButton(
-            "Clear"
+            "↻  Clear"
+        )
+
+        self.privacy_button = QPushButton(
+            "🔒  Privacy Mode"
         )
 
         self.start_button.clicked.connect(
@@ -225,6 +394,47 @@ class MeetingAssistantWindow(QMainWindow):
             self.clear_content
         )
 
+        self.privacy_button.clicked.connect(
+            self.toggle_privacy
+        )
+
+        button_style = """
+            QPushButton {
+                background-color: #202938;
+                color: #E8ECF3;
+                border: 1px solid #374255;
+                border-radius: 9px;
+                padding: 12px 18px;
+                font-size: 13px;
+                font-weight: 600;
+            }
+
+            QPushButton:hover {
+                background-color: #2A3548;
+                border: 1px solid #6EA8FE;
+            }
+
+            QPushButton:pressed {
+                background-color: #151B24;
+            }
+        """
+
+        self.start_button.setStyleSheet(
+            button_style
+        )
+
+        self.stop_button.setStyleSheet(
+            button_style
+        )
+
+        self.clear_button.setStyleSheet(
+            button_style
+        )
+
+        self.privacy_button.setStyleSheet(
+            button_style
+        )
+
         button_layout.addWidget(
             self.start_button
         )
@@ -237,34 +447,30 @@ class MeetingAssistantWindow(QMainWindow):
             self.clear_button
         )
 
+        button_layout.addWidget(
+            self.privacy_button
+        )
+
         main_layout.addLayout(
             button_layout
         )
 
-        # Privacy status
-        self.privacy_label = QLabel(
-            "Privacy Mode: OFF"
-        )
+        # =========================================
+        # PRIVACY STATUS
+        # =========================================
 
-        self.privacy_label.setAlignment(
-            Qt.AlignCenter
-        )
-
-        self.privacy_label.setStyleSheet("""
-            QLabel {
-                font-size: 15px;
-                font-weight: bold;
-                padding: 10px;
-            }
-        """)
+        self.privacy_label = PrivacyStatusWidget()
 
         main_layout.addWidget(
             self.privacy_label
         )
 
-        # Footer
+        # =========================================
+        # FOOTER
+        # =========================================
+
         footer = QLabel(
-            "AI Meeting Assistant - Three Phase Academic Project"
+            "AI Meeting Assistant  •  Phase 1 + Phase 2"
         )
 
         footer.setAlignment(
@@ -273,8 +479,9 @@ class MeetingAssistantWindow(QMainWindow):
 
         footer.setStyleSheet("""
             QLabel {
-                font-size: 12px;
-                padding: 10px;
+                color: #667085;
+                font-size: 11px;
+                padding-top: 4px;
             }
         """)
 
@@ -282,11 +489,27 @@ class MeetingAssistantWindow(QMainWindow):
             footer
         )
 
+    # =============================================
+    # START ASSISTANT
+    # =============================================
+
     def start_assistant(self):
 
         self.status_label.setText(
-            "Status: Starting microphone..."
+            "●  STARTING"
         )
+
+        self.status_label.setStyleSheet("""
+            QLabel {
+                background-color: #202733;
+                color: #FFD166;
+                border: 1px solid #334052;
+                border-radius: 18px;
+                padding: 8px 16px;
+                font-size: 12px;
+                font-weight: bold;
+            }
+        """)
 
         self.speech_worker = SpeechWorker()
 
@@ -304,11 +527,27 @@ class MeetingAssistantWindow(QMainWindow):
 
         self.speech_worker.start()
 
+    # =============================================
+    # STOP ASSISTANT
+    # =============================================
+
     def stop_assistant(self):
 
         self.status_label.setText(
-            "Status: Assistant Stopped"
+            "●  STOPPED"
         )
+
+        self.status_label.setStyleSheet("""
+            QLabel {
+                background-color: #202733;
+                color: #FF7B7B;
+                border: 1px solid #334052;
+                border-radius: 18px;
+                padding: 8px 16px;
+                font-size: 12px;
+                font-weight: bold;
+            }
+        """)
 
         if self.speech_worker is not None:
 
@@ -318,11 +557,19 @@ class MeetingAssistantWindow(QMainWindow):
 
             self.speech_worker = None
 
+    # =============================================
+    # UPDATE QUESTION
+    # =============================================
+
     def update_question(self, text):
 
         self.question_box.setPlainText(
             text
         )
+
+    # =============================================
+    # UPDATE ANSWER
+    # =============================================
 
     def update_answer(self, answer):
 
@@ -330,11 +577,131 @@ class MeetingAssistantWindow(QMainWindow):
             answer
         )
 
+    # =============================================
+    # UPDATE STATUS
+    # =============================================
+
     def update_status(self, status):
 
-        self.status_label.setText(
-            status
-        )
+        if status == "LISTENING":
+
+            self.status_label.setText(
+                "●  LISTENING"
+            )
+
+            self.status_label.setStyleSheet("""
+                QLabel {
+                    background-color: #172B3A;
+                    color: #6EA8FE;
+                    border: 1px solid #285477;
+                    border-radius: 18px;
+                    padding: 8px 16px;
+                    font-size: 12px;
+                    font-weight: bold;
+                }
+            """)
+
+        elif status == "GENERATING ANSWER":
+
+            self.status_label.setText(
+                "●  THINKING"
+            )
+
+            self.status_label.setStyleSheet("""
+                QLabel {
+                    background-color: #29243B;
+                    color: #B8A7FF;
+                    border: 1px solid #4B3E70;
+                    border-radius: 18px;
+                    padding: 8px 16px;
+                    font-size: 12px;
+                    font-weight: bold;
+                }
+            """)
+
+        elif status == "NO QUESTION DETECTED":
+
+            self.status_label.setText(
+                "●  NO QUESTION"
+            )
+
+            self.status_label.setStyleSheet("""
+                QLabel {
+                    background-color: #382D1B;
+                    color: #FFD166;
+                    border: 1px solid #66501E;
+                    border-radius: 18px;
+                    padding: 8px 16px;
+                    font-size: 12px;
+                    font-weight: bold;
+                }
+            """)
+
+        else:
+
+            self.status_label.setText(
+                "●  READY"
+            )
+
+            self.status_label.setStyleSheet("""
+                QLabel {
+                    background-color: #202733;
+                    color: #71D79A;
+                    border: 1px solid #334052;
+                    border-radius: 18px;
+                    padding: 8px 16px;
+                    font-size: 12px;
+                    font-weight: bold;
+                }
+            """)
+
+    # =============================================
+    # PRIVACY MODE
+    # =============================================
+
+    def toggle_privacy(self):
+
+        success = self.privacy_mode.toggle()
+
+        if success:
+
+            if self.privacy_mode.is_enabled():
+
+                self.privacy_label.set_privacy_on()
+
+                self.privacy_button.setText(
+                    "🔓  Disable Privacy"
+                )
+
+            else:
+
+                self.privacy_label.set_privacy_off()
+
+                self.privacy_button.setText(
+                    "🔒  Privacy Mode"
+                )
+
+        else:
+
+            self.privacy_label.setText(
+                "⚠  Privacy Mode could not be enabled"
+            )
+
+            self.privacy_label.setStyleSheet("""
+                QLabel {
+                    background-color: #3A2020;
+                    color: #FF8A8A;
+                    border: 1px solid #6B3030;
+                    border-radius: 10px;
+                    padding: 8px 16px;
+                    font-size: 13px;
+                    font-weight: bold;
+                }
+            """)
+
+    # =============================================
+    # CLEAR
+    # =============================================
 
     def clear_content(self):
 
@@ -343,8 +710,20 @@ class MeetingAssistantWindow(QMainWindow):
         self.answer_box.clear()
 
         self.status_label.setText(
-            "Status: Ready"
+            "●  READY"
         )
+
+        self.status_label.setStyleSheet("""
+            QLabel {
+                background-color: #202733;
+                color: #71D79A;
+                border: 1px solid #334052;
+                border-radius: 18px;
+                padding: 8px 16px;
+                font-size: 12px;
+                font-weight: bold;
+            }
+        """)
 
 
 def run_app():
@@ -363,4 +742,3 @@ def run_app():
 if __name__ == "__main__":
 
     run_app()
-
