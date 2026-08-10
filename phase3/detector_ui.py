@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
     QMessageBox
 )
 
-from detector import AIAssistantDetector
+from phase3.detector import AIAssistantDetector
 
 
 class DetectionWindow(QMainWindow):
