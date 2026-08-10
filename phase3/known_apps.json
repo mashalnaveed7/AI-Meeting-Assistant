@@ -1,5 +1,9 @@
 {
     "known_ai_tools": [
-        "mock_ai_assistant.exe"
+        "mock_ai_assistant.exe",
+        "cluely.exe",
+        "aura.exe",
+        "openinterviewcoder.exe",
+        "natively.exe"
     ]
 }
