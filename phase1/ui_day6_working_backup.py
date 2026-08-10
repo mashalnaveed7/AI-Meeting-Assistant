@@ -265,44 +265,6 @@ class MeetingAssistantWindow(QMainWindow):
             self.question_box
         )
 
-        # Ask AI button - placed directly below the question box
-        self.ask_button = QPushButton(
-            "🤖  Ask AI"
-        )
-
-        self.ask_button.setMinimumHeight(
-            42
-        )
-
-        self.ask_button.setStyleSheet("""
-            QPushButton {
-                background-color: #6C5CE7;
-                color: white;
-                border: 1px solid #8B7CF6;
-                border-radius: 9px;
-                padding: 10px 18px;
-                font-size: 13px;
-                font-weight: 700;
-            }
-
-            QPushButton:hover {
-                background-color: #7B6CF0;
-                border: 1px solid #A69BFF;
-            }
-
-            QPushButton:pressed {
-                background-color: #5748C7;
-            }
-        """)
-
-        self.ask_button.clicked.connect(
-            self.ask_ai
-        )
-
-        question_layout.addWidget(
-            self.ask_button
-        )
-
         main_layout.addWidget(
             question_card
         )
@@ -411,6 +373,7 @@ class MeetingAssistantWindow(QMainWindow):
         self.clear_button = QPushButton(
             "↻  Clear"
         )
+
         self.privacy_button = QPushButton(
             "🔒  Privacy Mode"
         )
@@ -426,6 +389,7 @@ class MeetingAssistantWindow(QMainWindow):
         self.clear_button.clicked.connect(
             self.clear_content
         )
+
         self.privacy_button.clicked.connect(
             self.toggle_privacy
         )
@@ -462,9 +426,7 @@ class MeetingAssistantWindow(QMainWindow):
         self.clear_button.setStyleSheet(
             button_style
         )
-        self.ask_button.setStyleSheet(
-            button_style
-        )
+
         self.privacy_button.setStyleSheet(
             button_style
         )
@@ -480,6 +442,7 @@ class MeetingAssistantWindow(QMainWindow):
         button_layout.addWidget(
             self.clear_button
         )
+
         button_layout.addWidget(
             self.privacy_button
         )
@@ -681,132 +644,6 @@ class MeetingAssistantWindow(QMainWindow):
                     background-color: #202733;
                     color: #71D79A;
                     border: 1px solid #334052;
-                    border-radius: 18px;
-                    padding: 8px 16px;
-                    font-size: 12px;
-                    font-weight: bold;
-                }
-            """)
-
-    def keyPressEvent(self, event):
-
-        if (
-            event.key() == Qt.Key_Return
-            and event.modifiers() & Qt.ControlModifier
-        ):
-            self.ask_ai()
-            event.accept()
-            return
-
-        super().keyPressEvent(event)
-
-    # =============================================
-    # ASK AI
-    # =============================================
-
-    def ask_ai(self):
-
-        question = self.question_box.toPlainText().strip()
-
-        if not question:
-
-            self.status_label.setText(
-                "●  PLEASE ENTER A QUESTION"
-            )
-
-            self.status_label.setStyleSheet("""
-                QLabel {
-                    background-color: #382D1B;
-                    color: #FFD166;
-                    border: 1px solid #66501E;
-                    border-radius: 18px;
-                    padding: 8px 16px;
-                    font-size: 12px;
-                    font-weight: bold;
-                }
-            """)
-
-            self.answer_box.setPlainText(
-                "Please enter a question first."
-            )
-
-            return
-
-        self.status_label.setText(
-            "●  GENERATING ANSWER"
-        )
-
-        self.status_label.setStyleSheet("""
-            QLabel {
-                background-color: #29243B;
-                color: #B8A7FF;
-                border: 1px solid #4B3E70;
-                border-radius: 18px;
-                padding: 8px 16px;
-                font-size: 12px;
-                font-weight: bold;
-            }
-        """)
-
-        try:
-
-            ai_service = AIService()
-
-            answer = ai_service.get_answer(
-                question
-            )
-
-            if answer:
-
-                self.answer_box.setPlainText(
-                    str(answer)
-                )
-
-                self.status_label.setText(
-                    "●  READY"
-                )
-
-                self.status_label.setStyleSheet("""
-                    QLabel {
-                        background-color: #202733;
-                        color: #71D79A;
-                        border: 1px solid #334052;
-                        border-radius: 18px;
-                        padding: 8px 16px;
-                        font-size: 12px;
-                        font-weight: bold;
-                    }
-                """)
-
-            else:
-
-                self.answer_box.setPlainText(
-                    "No answer was returned by the AI service."
-                )
-
-                self.status_label.setText(
-                    "●  NO ANSWER"
-                )
-
-        except Exception as error:
-
-            print("Keyboard AI error:")
-            print(error)
-
-            self.answer_box.setPlainText(
-                "Sorry, I could not generate an answer.\n\n"
-                + str(error)
-            )
-
-            self.status_label.setText(
-                "●  AI ERROR"
-            )
-
-            self.status_label.setStyleSheet("""
-                QLabel {
-                    background-color: #3A2020;
-                    color: #FF8A8A;
-                    border: 1px solid #6B3030;
                     border-radius: 18px;
                     padding: 8px 16px;
                     font-size: 12px;
