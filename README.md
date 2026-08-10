@@ -1,89 +1,107 @@
-# AI Meeting Assistant & Detection System
+# MeetMind AI & MeetGuard AI
 
-## Project Overview
+## AI Meeting Assistant and Detection System
 
-This project is a desktop-based AI Meeting Assistant designed to help users during online meetings by converting spoken questions into text, generating relevant AI-based answers, and displaying those answers through a desktop interface.
+This project is a three-phase desktop AI system developed as an academic project.
 
-The project consists of three phases:
+---
 
-### Phase 1 - AI Meeting Assistant
-- Capture spoken questions
-- Convert speech to text
-- Analyze questions using an LLM
-- Display relevant answers
+## MeetMind AI
 
-### Phase 2 - Privacy During Screen Sharing
-- Provide a privacy mode
-- Hide sensitive AI content when privacy mode is activated
-- Provide a clear privacy status indicator
+### Real-Time AI Meeting Assistant
 
-### Phase 3 - AI Assistant Detection Tool
-- Scan running Windows processes
-- Identify applications from a configurable list of known AI assistant processes
-- Display detection results to the user
+MeetMind AI is a desktop application that listens to spoken questions during online meetings, converts speech to text, sends the question to an AI language model, and displays the generated answer in real time.
 
-## Technology Stack
+### Features
+
+- Voice-based question input
+- Keyboard question input
+- Speech-to-text
+- AI-powered answer generation
+- Real-time answer display
+- Interactive desktop GUI
+- Privacy mode
+
+---
+
+## MeetGuard AI
+
+### AI Meeting Assistant Detection & Monitoring
+
+MeetGuard AI is a separate desktop application designed to monitor running processes and identify configured AI assistant applications.
+
+### Features
+
+- Process monitoring
+- Known AI-tool detection
+- Detection status
+- Application list
+- Scan Now
+- Clear Results
+- Visual warning system
+
+---
+
+# Project Phases
+
+## Phase 1
+Real-Time AI Meeting Assistant
+
+## Phase 2
+Privacy During Screen Sharing
+
+## Phase 3
+AI Assistant Detection Tool
+
+---
+
+# Technologies
 
 - Python
 - PySide6
 - Speech-to-Text
 - Large Language Model
-- Windows APIs
+- Groq API
 - psutil
-- GitHub
-## Current Progress
+- Windows process APIs
 
-### Day 1
-- Project structure created
-- PySide6 desktop GUI created
-- GitHub repository configured
+---
 
-### Day 2
-- Microphone integration completed
-- Speech-to-text completed
-- Spoken questions displayed in GUI
+# Project Structure
 
-### Day 3
-- Groq LLM integration completed
-- AI answer generation completed
-- AI answers displayed in GUI
+phase1/
+    AI Meeting Assistant
 
+phase2/
+    Privacy functionality
 
+phase3/
+    AI Assistant Detection
 
-- ### Day 4
+docs/
+    Project documentation
 
-- Implemented Phase 2 privacy mode.
-- Added Windows screen-capture exclusion using SetWindowDisplayAffinity.
-- Added Privacy Mode ON/OFF control.
-- Redesigned the desktop GUI.
-- Added interactive buttons and status indicators.
-- Improved question and answer layout.
-- Added professional dark theme.
-### Day 5
+tests/
+    Testing files
 
-- Implemented Phase 3 AI assistant detection.
-- Added Windows process scanning using psutil.
-- Added configurable known AI assistant list.
-- Added process detection logic.
-- Added detection warning system.
-- Created separate Phase 3 desktop GUI.
-- Added Scan Now and Clear Results controls.
-- Added safe mock AI assistant process for testing.
-- Tested both detection and clear states.
+---
 
-### Upcoming
+# How to Run
 
-### Day 6
+Activate the virtual environment:
 
-- Full system testing
-- Bug fixing
-- Phase integration
-- Performance improvements
+    .\venv\Scripts\Activate.ps1
 
-### Day 7
+Run MeetMind AI:
 
-- Final documentation
-- Final GUI polish
-- Demonstration preparation
-- Final GitHub update
+    python phase1\main.py
 
+Run MeetGuard AI:
+
+    python phase3\detector_ui.py
+
+---
+
+# Academic Project
+
+This project demonstrates both AI assistance and AI-assistance detection from two different perspectives.

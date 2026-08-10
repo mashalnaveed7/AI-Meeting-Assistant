@@ -71,7 +71,7 @@ class MeetingAssistantWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle(
-            "AI Meeting Assistant"
+            "MeetMind AI"
         )
 
         self.setMinimumSize(
@@ -125,7 +125,7 @@ class MeetingAssistantWindow(QMainWindow):
         title_layout = QVBoxLayout()
 
         title = QLabel(
-            "AI MEETING ASSISTANT"
+            "MeetMind AI"
         )
 
         title.setStyleSheet("""
@@ -137,7 +137,7 @@ class MeetingAssistantWindow(QMainWindow):
         """)
 
         subtitle = QLabel(
-            "Real-time AI assistance for online meetings"
+            "Real-Time AI Meeting Assistant"
         )
 
         subtitle.setStyleSheet("""
@@ -503,7 +503,7 @@ class MeetingAssistantWindow(QMainWindow):
         # =========================================
 
         footer = QLabel(
-            "AI Meeting Assistant  •  Phase 1 + Phase 2"
+            "MeetMind AI • Real-Time AI Meeting Assistant"
         )
 
         footer.setAlignment(

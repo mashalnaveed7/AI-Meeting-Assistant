@@ -28,7 +28,7 @@ class DetectionWindow(QMainWindow):
         )
 
         self.setWindowTitle(
-            "AI Assistant Detection System"
+            "MeetGuard AI"
         )
 
         self.setMinimumSize(
@@ -79,7 +79,7 @@ class DetectionWindow(QMainWindow):
         title_layout = QVBoxLayout()
 
         title = QLabel(
-            "AI ASSISTANT DETECTOR"
+            "MeetGuard AI"
         )
 
         title.setStyleSheet("""
@@ -91,7 +91,7 @@ class DetectionWindow(QMainWindow):
         """)
 
         subtitle = QLabel(
-            "Monitor running applications for known AI assistant tools"
+            "AI Meeting Assistant Detection & Monitoring"
         )
 
         subtitle.setStyleSheet("""
@@ -364,7 +364,7 @@ class DetectionWindow(QMainWindow):
 
         # FOOTER
         footer = QLabel(
-            "AI Assistant Detection System  •  Phase 3"
+            "MeetGuard AI • AI Meeting Assistant Detection & Monitoring"
         )
 
         footer.setAlignment(
