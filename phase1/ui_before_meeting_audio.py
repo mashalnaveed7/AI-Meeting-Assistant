@@ -1,4 +1,3 @@
-
 import sys
 
 from PySide6.QtCore import Qt, QThread, Signal
@@ -16,7 +15,6 @@ from PySide6.QtWidgets import (
 
 from ai_service import AIService
 from speech_to_text import SpeechToText
-from meeting_audio_worker import MeetingAudioWorker
 
 from phase2.privacy_mode import PrivacyMode
 from phase2.privacy_ui import PrivacyStatusWidget
@@ -29,6 +27,7 @@ class SpeechWorker(QThread):
     listening_status = Signal(str)
 
     def __init__(self):
+
         super().__init__()
 
         self.speech_to_text = SpeechToText()
@@ -36,14 +35,18 @@ class SpeechWorker(QThread):
 
     def run(self):
 
-        self.listening_status.emit("LISTENING")
+        self.listening_status.emit(
+            "LISTENING"
+        )
 
         text = self.speech_to_text.listen()
 
         if not text:
+
             self.listening_status.emit(
                 "NO QUESTION DETECTED"
             )
+
             return
 
         self.transcription_ready.emit(text)
@@ -56,15 +59,20 @@ class SpeechWorker(QThread):
 
         self.answer_ready.emit(answer)
 
-        self.listening_status.emit("READY")
+        self.listening_status.emit(
+            "READY"
+        )
 
 
 class MeetingAssistantWindow(QMainWindow):
 
     def __init__(self):
+
         super().__init__()
 
-        self.setWindowTitle("MeetMind AI")
+        self.setWindowTitle(
+            "MeetMind AI"
+        )
 
         self.setMinimumSize(
             950,
@@ -72,7 +80,6 @@ class MeetingAssistantWindow(QMainWindow):
         )
 
         self.speech_worker = None
-        self.meeting_audio_worker = None
 
         self.privacy_mode = PrivacyMode(self)
 
@@ -109,15 +116,17 @@ class MeetingAssistantWindow(QMainWindow):
             main_layout
         )
 
-        # ====================================================
+        # =========================================
         # HEADER
-        # ====================================================
+        # =========================================
 
         header_layout = QHBoxLayout()
 
         title_layout = QVBoxLayout()
 
-        title = QLabel("MeetMind AI")
+        title = QLabel(
+            "MeetMind AI"
+        )
 
         title.setStyleSheet("""
             QLabel {
@@ -142,10 +151,13 @@ class MeetingAssistantWindow(QMainWindow):
         title_layout.addWidget(title)
         title_layout.addWidget(subtitle)
 
-        header_layout.addLayout(title_layout)
+        header_layout.addLayout(
+            title_layout
+        )
 
         header_layout.addStretch()
 
+        # Status indicator
         self.status_label = QLabel(
             "●  READY"
         )
@@ -154,7 +166,9 @@ class MeetingAssistantWindow(QMainWindow):
             Qt.AlignCenter
         )
 
-        self.status_label.setMinimumWidth(150)
+        self.status_label.setMinimumWidth(
+            150
+        )
 
         self.status_label.setStyleSheet("""
             QLabel {
@@ -176,9 +190,9 @@ class MeetingAssistantWindow(QMainWindow):
             header_layout
         )
 
-        # ====================================================
+        # =========================================
         # QUESTION CARD
-        # ====================================================
+        # =========================================
 
         question_card = QFrame()
 
@@ -205,7 +219,9 @@ class MeetingAssistantWindow(QMainWindow):
             question_layout
         )
 
-        question_title = QLabel("QUESTION")
+        question_title = QLabel(
+            "QUESTION"
+        )
 
         question_title.setStyleSheet("""
             QLabel {
@@ -223,10 +239,12 @@ class MeetingAssistantWindow(QMainWindow):
         self.question_box = QTextEdit()
 
         self.question_box.setPlaceholderText(
-            "Speak your question or type your question here..."
-        )
+    "Speak your question or type your question here..."
+)
 
-        self.question_box.setMinimumHeight(100)
+        self.question_box.setMinimumHeight(
+    100
+)
 
         self.question_box.setStyleSheet("""
             QTextEdit {
@@ -247,11 +265,35 @@ class MeetingAssistantWindow(QMainWindow):
             self.question_box
         )
 
+        # Ask AI button - placed directly below the question box
         self.ask_button = QPushButton(
             "🤖  Ask AI"
         )
 
-        self.ask_button.setMinimumHeight(42)
+        self.ask_button.setMinimumHeight(
+            42
+        )
+
+        self.ask_button.setStyleSheet("""
+            QPushButton {
+                background-color: #6C5CE7;
+                color: white;
+                border: 1px solid #8B7CF6;
+                border-radius: 9px;
+                padding: 10px 18px;
+                font-size: 13px;
+                font-weight: 700;
+            }
+
+            QPushButton:hover {
+                background-color: #7B6CF0;
+                border: 1px solid #A69BFF;
+            }
+
+            QPushButton:pressed {
+                background-color: #5748C7;
+            }
+        """)
 
         self.ask_button.clicked.connect(
             self.ask_ai
@@ -265,9 +307,9 @@ class MeetingAssistantWindow(QMainWindow):
             question_card
         )
 
-        # ====================================================
+        # =========================================
         # ANSWER CARD
-        # ====================================================
+        # =========================================
 
         answer_card = QFrame()
 
@@ -294,7 +336,9 @@ class MeetingAssistantWindow(QMainWindow):
             answer_layout
         )
 
-        answer_title = QLabel("AI ANSWER")
+        answer_title = QLabel(
+            "AI ANSWER"
+        )
 
         answer_title.setStyleSheet("""
             QLabel {
@@ -315,9 +359,13 @@ class MeetingAssistantWindow(QMainWindow):
             "The AI-generated answer will appear here..."
         )
 
-        self.answer_box.setReadOnly(True)
+        self.answer_box.setReadOnly(
+            True
+        )
 
-        self.answer_box.setMinimumHeight(190)
+        self.answer_box.setMinimumHeight(
+            190
+        )
 
         self.answer_box.setStyleSheet("""
             QTextEdit {
@@ -342,20 +390,18 @@ class MeetingAssistantWindow(QMainWindow):
             answer_card
         )
 
-        # ====================================================
+        # =========================================
         # BUTTONS
-        # ====================================================
+        # =========================================
 
         button_layout = QHBoxLayout()
 
-        button_layout.setSpacing(12)
+        button_layout.setSpacing(
+            12
+        )
 
         self.start_button = QPushButton(
             "🎤  Start Listening"
-        )
-
-        self.meeting_audio_button = QPushButton(
-            "🔊  Meeting Audio"
         )
 
         self.stop_button = QPushButton(
@@ -365,17 +411,12 @@ class MeetingAssistantWindow(QMainWindow):
         self.clear_button = QPushButton(
             "↻  Clear"
         )
-
         self.privacy_button = QPushButton(
             "🔒  Privacy Mode"
         )
 
         self.start_button.clicked.connect(
             self.start_assistant
-        )
-
-        self.meeting_audio_button.clicked.connect(
-            self.start_meeting_audio
         )
 
         self.stop_button.clicked.connect(
@@ -385,7 +426,6 @@ class MeetingAssistantWindow(QMainWindow):
         self.clear_button.clicked.connect(
             self.clear_content
         )
-
         self.privacy_button.clicked.connect(
             self.toggle_privacy
         )
@@ -415,10 +455,6 @@ class MeetingAssistantWindow(QMainWindow):
             button_style
         )
 
-        self.meeting_audio_button.setStyleSheet(
-            button_style
-        )
-
         self.stop_button.setStyleSheet(
             button_style
         )
@@ -426,7 +462,9 @@ class MeetingAssistantWindow(QMainWindow):
         self.clear_button.setStyleSheet(
             button_style
         )
-
+        self.ask_button.setStyleSheet(
+            button_style
+        )
         self.privacy_button.setStyleSheet(
             button_style
         )
@@ -436,17 +474,12 @@ class MeetingAssistantWindow(QMainWindow):
         )
 
         button_layout.addWidget(
-            self.meeting_audio_button
-        )
-
-        button_layout.addWidget(
             self.stop_button
         )
 
         button_layout.addWidget(
             self.clear_button
         )
-
         button_layout.addWidget(
             self.privacy_button
         )
@@ -455,9 +488,9 @@ class MeetingAssistantWindow(QMainWindow):
             button_layout
         )
 
-        # ====================================================
+        # =========================================
         # PRIVACY STATUS
-        # ====================================================
+        # =========================================
 
         self.privacy_label = PrivacyStatusWidget()
 
@@ -465,9 +498,9 @@ class MeetingAssistantWindow(QMainWindow):
             self.privacy_label
         )
 
-        # ====================================================
+        # =========================================
         # FOOTER
-        # ====================================================
+        # =========================================
 
         footer = QLabel(
             "MeetMind AI • Real-Time AI Meeting Assistant"
@@ -489,9 +522,9 @@ class MeetingAssistantWindow(QMainWindow):
             footer
         )
 
-    # ========================================================
+    # =============================================
     # START ASSISTANT
-    # ========================================================
+    # =============================================
 
     def start_assistant(self):
 
@@ -527,9 +560,9 @@ class MeetingAssistantWindow(QMainWindow):
 
         self.speech_worker.start()
 
-    # ========================================================
+    # =============================================
     # STOP ASSISTANT
-    # ========================================================
+    # =============================================
 
     def stop_assistant(self):
 
@@ -549,12 +582,6 @@ class MeetingAssistantWindow(QMainWindow):
             }
         """)
 
-        if self.meeting_audio_worker is not None:
-
-            self.meeting_audio_worker.stop()
-
-            self.meeting_audio_worker = None
-
         if self.speech_worker is not None:
 
             self.speech_worker.quit()
@@ -563,9 +590,9 @@ class MeetingAssistantWindow(QMainWindow):
 
             self.speech_worker = None
 
-    # ========================================================
+    # =============================================
     # UPDATE QUESTION
-    # ========================================================
+    # =============================================
 
     def update_question(self, text):
 
@@ -573,9 +600,9 @@ class MeetingAssistantWindow(QMainWindow):
             text
         )
 
-    # ========================================================
+    # =============================================
     # UPDATE ANSWER
-    # ========================================================
+    # =============================================
 
     def update_answer(self, answer):
 
@@ -583,9 +610,9 @@ class MeetingAssistantWindow(QMainWindow):
             answer
         )
 
-    # ========================================================
+    # =============================================
     # UPDATE STATUS
-    # ========================================================
+    # =============================================
 
     def update_status(self, status):
 
@@ -661,28 +688,21 @@ class MeetingAssistantWindow(QMainWindow):
                 }
             """)
 
-    # ========================================================
-    # KEYBOARD SHORTCUT
-    # ========================================================
-
     def keyPressEvent(self, event):
 
         if (
             event.key() == Qt.Key_Return
             and event.modifiers() & Qt.ControlModifier
         ):
-
             self.ask_ai()
-
             event.accept()
-
             return
 
         super().keyPressEvent(event)
 
-    # ========================================================
+    # =============================================
     # ASK AI
-    # ========================================================
+    # =============================================
 
     def ask_ai(self):
 
@@ -794,9 +814,9 @@ class MeetingAssistantWindow(QMainWindow):
                 }
             """)
 
-    # ========================================================
+    # =============================================
     # PRIVACY MODE
-    # ========================================================
+    # =============================================
 
     def toggle_privacy(self):
 
@@ -838,9 +858,9 @@ class MeetingAssistantWindow(QMainWindow):
                 }
             """)
 
-    # ========================================================
+    # =============================================
     # CLEAR
-    # ========================================================
+    # =============================================
 
     def clear_content(self):
 
@@ -864,180 +884,6 @@ class MeetingAssistantWindow(QMainWindow):
             }
         """)
 
-    # ========================================================
-    # MEETING AUDIO
-    # ========================================================
-
-    def start_meeting_audio(self):
-
-        if (
-            self.meeting_audio_worker is not None
-            and self.meeting_audio_worker.isRunning()
-        ):
-            return
-
-        self.status_label.setText(
-            "🔊  MEETING AUDIO"
-        )
-
-        self.status_label.setStyleSheet("""
-            QLabel {
-                background-color: #172B3A;
-                color: #6EA8FE;
-                border: 1px solid #285477;
-                border-radius: 18px;
-                padding: 8px 16px;
-                font-size: 12px;
-                font-weight: bold;
-            }
-        """)
-
-        self.meeting_audio_worker = MeetingAudioWorker()
-
-        self.meeting_audio_worker.transcription_ready.connect(
-            self.update_meeting_question
-        )
-
-        self.meeting_audio_worker.listening_status.connect(
-            self.update_meeting_status
-        )
-
-        self.meeting_audio_worker.start()
-
-    # ========================================================
-    # MEETING AUDIO QUESTION
-    # ========================================================
-
-    def update_meeting_question(self, text):
-
-        if not text:
-            return
-
-        print("Meeting question detected:")
-        print(text)
-
-        self.question_box.setPlainText(
-            text
-        )
-
-        self.status_label.setText(
-            "🤖  GENERATING ANSWER"
-        )
-
-        self.status_label.setStyleSheet("""
-            QLabel {
-                background-color: #29243B;
-                color: #B8A7FF;
-                border: 1px solid #4B3E70;
-                border-radius: 18px;
-                padding: 8px 16px;
-                font-size: 12px;
-                font-weight: bold;
-            }
-        """)
-
-        try:
-
-            ai_service = AIService()
-
-            answer = ai_service.get_answer(
-                text
-            )
-
-            self.answer_box.setPlainText(
-                str(answer)
-            )
-
-            self.status_label.setText(
-                "●  READY"
-            )
-
-            self.status_label.setStyleSheet("""
-                QLabel {
-                    background-color: #202733;
-                    color: #71D79A;
-                    border: 1px solid #334052;
-                    border-radius: 18px;
-                    padding: 8px 16px;
-                    font-size: 12px;
-                    font-weight: bold;
-                }
-            """)
-
-        except Exception as error:
-
-            print("Meeting AI error:")
-            print(error)
-
-            self.answer_box.setPlainText(
-                "Sorry, I could not generate an answer.\n\n"
-                + str(error)
-            )
-
-            self.status_label.setText(
-                "●  AI ERROR"
-            )
-
-            self.status_label.setStyleSheet("""
-                QLabel {
-                    background-color: #3A2020;
-                    color: #FF8A8A;
-                    border: 1px solid #6B3030;
-                    border-radius: 18px;
-                    padding: 8px 16px;
-                    font-size: 12px;
-                    font-weight: bold;
-                }
-            """)
-
-    # ========================================================
-    # MEETING AUDIO STATUS
-    # ========================================================
-
-    def update_meeting_status(self, status):
-
-        if status == "MEETING AUDIO LISTENING":
-
-            self.status_label.setText(
-                "🔊  MEETING AUDIO"
-            )
-
-        elif status == "LISTENING TO MEETING":
-
-            self.status_label.setText(
-                "🔊  LISTENING TO MEET"
-            )
-
-        elif status == "PROCESSING MEETING AUDIO":
-
-            self.status_label.setText(
-                "🧠  PROCESSING"
-            )
-
-        elif status == "SYSTEM AUDIO ERROR":
-
-            self.status_label.setText(
-                "●  AUDIO ERROR"
-            )
-
-        elif status == "MEETING AUDIO ERROR":
-
-            self.status_label.setText(
-                "●  AUDIO ERROR"
-            )
-
-        self.status_label.setStyleSheet("""
-            QLabel {
-                background-color: #172B3A;
-                color: #6EA8FE;
-                border: 1px solid #285477;
-                border-radius: 18px;
-                padding: 8px 16px;
-                font-size: 12px;
-                font-weight: bold;
-            }
-        """)
-
 
 def run_app():
 
@@ -1053,5 +899,5 @@ def run_app():
 
 
 if __name__ == "__main__":
-    run_app()
 
+    run_app()
