@@ -1,71 +1,74 @@
-import os
-
-from dotenv import load_dotenv
-from groq import Groq
-
-
-load_dotenv()
+import json
+import urllib.request
+import urllib.error
 
 
 class AIService:
     """
-    Handles communication with the Groq LLM.
+    Connects MeetMind AI to the MeetMind backend.
+    The Groq API key is kept on the backend and is
+    never stored inside the desktop application.
     """
 
     def __init__(self):
 
-        api_key = os.getenv("GROQ_API_KEY")
-
-        if not api_key:
-            raise ValueError(
-                "GROQ_API_KEY was not found in the .env file."
-            )
-
-        self.client = Groq(
-            api_key=api_key
-        )
-
-        self.model = "llama-3.1-8b-instant"
+        self.backend_url = "http://127.0.0.1:8000/ask"
 
     def get_answer(self, question):
         """
-        Send a question to the LLM and return its answer.
+        Send a question to the MeetMind backend
+        and return the AI-generated answer.
         """
 
-        if not question.strip():
+        if not question or not question.strip():
+
             return "Please provide a question."
 
         try:
 
-            response = self.client.chat.completions.create(
+            data = json.dumps({
+                "question": question.strip()
+            }).encode("utf-8")
 
-                model=self.model,
-
-                messages=[
-                    {
-                        "role": "system",
-                        "content": (
-                            "You are an AI meeting assistant. "
-                            "Answer questions clearly, accurately, "
-                            "and concisely. "
-                            "Give practical answers suitable for "
-                            "a student or professional meeting."
-                        )
-                    },
-                    {
-                        "role": "user",
-                        "content": question
-                    }
-                ],
-
-                temperature=0.3,
-
-                max_tokens=500
+            request = urllib.request.Request(
+                self.backend_url,
+                data=data,
+                headers={
+                    "Content-Type": "application/json"
+                },
+                method="POST"
             )
 
-            answer = response.choices[0].message.content
+            with urllib.request.urlopen(
+                request,
+                timeout=30
+            ) as response:
 
-            return answer.strip()
+                response_data = json.loads(
+                    response.read().decode("utf-8")
+                )
+
+            answer = response_data.get(
+                "answer",
+                ""
+            )
+
+            if answer:
+
+                return answer.strip()
+
+            return "No answer was returned by the AI service."
+
+        except urllib.error.URLError as error:
+
+            print("MeetMind backend connection error:")
+            print(error)
+
+            return (
+                "MeetMind AI backend is not available.\n\n"
+                "Please make sure the MeetMind backend "
+                "is running."
+            )
 
         except Exception as error:
 

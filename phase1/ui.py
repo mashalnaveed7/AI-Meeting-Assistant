@@ -14,9 +14,9 @@ from PySide6.QtWidgets import (
     QFrame
 )
 
-from ai_service import AIService
-from speech_to_text import SpeechToText
-from meeting_audio_worker import MeetingAudioWorker
+from phase1.ai_service import AIService
+from phase1.speech_to_text import SpeechToText
+from phase1.meeting_audio_worker import MeetingAudioWorker
 
 from phase2.privacy_mode import PrivacyMode
 from phase2.privacy_ui import PrivacyStatusWidget

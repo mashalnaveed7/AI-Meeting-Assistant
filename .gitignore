@@ -5,3 +5,10 @@ __pycache__/
 .idea/
 .vscode/
 .DS_Store
+
+# PyInstaller generated files
+build/
+dist/
+
+# Audio test files
+*.wav
